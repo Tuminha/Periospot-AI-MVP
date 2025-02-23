@@ -11,8 +11,25 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        periospot: {
+          blue: {
+            strong: '#15365a',  // Strong Periospot Blue
+            mystic: '#003049',  // Mystic Blue
+          },
+          red: {
+            crimson: '#15365a',  // Crimson Blaze
+            dark: '#669bbc',    // Periospot Red
+          },
+          cream: '#669bbc',     // Vanilla Cream
+          black: '#000000',     // Black
+          white: '#ffffff',     // White
+        }
+      },
+      fontFamily: {
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
       },
     },
   },
   plugins: [],
+  darkMode: 'class',
 } satisfies Config;

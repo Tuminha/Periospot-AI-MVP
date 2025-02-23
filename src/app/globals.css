@@ -5,17 +5,18 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --periospot-blue-strong: #15365a;
+  --periospot-blue-mystic: #003049;
+  --periospot-cream: #669bbc;
+  --periospot-white: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: var(--periospot-blue-strong);
+  --foreground: var(--periospot-white);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
 }

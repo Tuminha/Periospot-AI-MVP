@@ -1,0 +1,293 @@
+---
+description: Description of the task this rule is helpful for: This file contains the Product Requirements Document (PRD) for the Periospot AI Minimum Viable Product (MVP), a web-based platform using Next.js to analyze dental scientific articles for inconsistencies, statistical flaws, and reference misinterpretations. It guides development by providing detailed requirements for features like Google login, article input, and AI-based analysis, targeting the files in the `src` directory and related configuration files.
+globs: src/**/*.ts, src/**/*.tsx, src/**/*.js, src/**/*.jsx, pages/**/*.tsx, api/**/*.ts
+---
+# Product Requirements Document (PRD) for Periospot AI MVP
+
+### 1. Overview
+
+#### Purpose
+Periospot AI is a web-based platform designed to assist dentists in evaluating the reliability of dental scientific articles. The MVP will leverage AI to detect red flags, inconsistencies, and inaccuracies, enabling users to quickly assess whether an article's claims are trustworthy. By focusing on core analysis features, the platform aims to save time and enhance decision-making for dental professionals.
+
+#### Target Audience
+- Dentists and dental researchers who rely on scientific literature for clinical decisions and research.
+
+#### Key Objectives
+- Provide a simple login system using Google OAuth.
+- Allow users to upload scientific articles (PDF/DOCX) or paste text for analysis.
+- Use an AI model (e.g., GPT-4 via OpenAI API) to analyze articles for critical issues.
+- Highlight red flags such as inconsistencies, statistical flaws, and reference misinterpretations.
+- Deliver a clear, dentist-friendly interface to display the analysis results.
+
+#### Scope
+The MVP will focus on essential functionalities to ensure a manageable initial build. Advanced features (e.g., bias detection or conflict of interest analysis) will be reserved for future iterations.
+
+---
+
+### 2. Features and Functionalities
+
+#### 2.1 User Authentication
+- **Description**: Users will log in using their Google accounts.
+- **Details**: Implement Google OAuth for secure and seamless authentication.
+- **Success Criteria**: Users can log in/out successfully, and their session is maintained during use.
+
+#### 2.2 Article Input
+- **Description**: Users can submit dental scientific articles for analysis.
+- **Details**: 
+  - Support uploading files in PDF and DOCX formats.
+  - Allow pasting article text directly into a text box.
+  - Extract text from uploaded files for processing.
+- **Success Criteria**: Users can successfully upload or paste an article, and the text is accurately extracted for analysis.
+
+#### 2.3 Analysis Features
+The MVP will detect the following critical issues in scientific articles, as requested. These features will form the core of the AI analysis, powered by the OpenAI API.
+
+##### 2.3.1 Inconsistencies Between Results and Conclusions
+- **Description**: Identify cases where the article's conclusions do not align with the presented results or data.
+- **Details**: 
+  - Compare claims in the abstract, discussion, and conclusion sections with the results section.
+  - Flag overstatements (e.g., claiming effectiveness when data shows no significance) or understatements.
+- **Example**: "The conclusion states the treatment is 'highly effective,' but the results show no statistical significance (p = 0.12)."
+- **Success Criteria**: The system accurately flags at least 80% of clear inconsistencies in test articles.
+
+##### 2.3.2 Statistical Flaws
+- **Description**: Detect suspicious or incorrect statistical reporting.
+- **Details**: Flag the following:
+  - **Unusual Standard Deviations**: E.g., standard deviation larger than the mean for non-negative data (impossible in certain contexts like time or count data).
+  - **Suspicious P-Values**: E.g., exactly 0.05 or very low values (e.g., <0.001) without justification or multiple testing correction.
+  - **Mismatched Statistical Tests**: E.g., using a t-test on non-normal data without evidence of normality.
+- **Example**: "The standard deviation (SD = 15) exceeds the mean (M = 10) for treatment duration, which is implausible."
+- **Success Criteria**: The system identifies statistically implausible values or methods with clear explanations.
+
+##### 2.3.3 Reference Misinterpretation
+- **Description**: Check if the article misinterprets or misrepresents cited references, especially in the discussion section, to fit the author's narrative.
+- **Details**: 
+  - Extract reference identifiers (e.g., URLs, DOIs, or titles) from the article.
+  - Fetch reference content (e.g., abstracts or full text if open-access) from the internet.
+  - Use the LLM to compare the article's claims about the reference with the reference's actual content.
+  - Flag discrepancies where the author stretches or misrepresents the cited source.
+- **Example**: "The article claims Reference [5] supports a 90% success rate, but Reference [5] reports only 60%."
+- **MVP Limitation**: Focus on open-access articles or abstracts due to access constraints; full reference checking can be expanded later.
+- **Success Criteria**: The system correctly identifies misinterpretations in references with accessible content.
+
+#### 2.4 Analysis Output
+- **Description**: Present the analysis in a clear, actionable format.
+- **Details**: 
+  - **Summary Section**: Overview of findings (e.g., "3 red flags detected: 1 inconsistency, 1 statistical flaw, 1 reference issue").
+  - **Detailed Breakdown**: 
+    - List specific inconsistencies with quoted text and explanations.
+    - Highlight statistical flaws with examples and reasoning.
+    - Note reference misinterpretations with comparisons to the original source.
+  - **Visual Cues**: Use color-coding (red for critical issues, yellow for warnings) and icons to emphasize key findings.
+- **Success Criteria**: Users can understand the analysis within 1-2 minutes and identify critical issues easily.
+
+---
+
+### 3. Technical Requirements
+
+#### 3.1 Frontend
+- **Framework**: Next.js with React components.
+- **Components**: 
+  - Login page with Google OAuth button.
+  - Article input page (file upload and text box).
+  - Analysis results page with summary and detailed sections.
+- **Design Goal**: Clean, minimalist UI optimized for readability.
+
+#### 3.2 Backend
+- **Framework**: Next.js API routes.
+- **Functionality**: 
+  - Handle file uploads and text extraction.
+  - Send article text to the OpenAI API with tailored prompts.
+  - Return and format the analysis results.
+
+#### 3.3 Authentication
+- **Library**: NextAuth.js for Google OAuth integration.
+- **Details**: Securely manage user sessions and tokens.
+
+#### 3.4 File Handling
+- **Libraries**: 
+  - `pdf-parse` for PDF text extraction.
+  - `mammoth` for DOCX text extraction.
+- **Details**: Convert uploaded files to plain text for analysis.
+
+#### 3.5 LLM Integration
+- **API**: OpenAI API (GPT-4 recommended).
+- **Prompts**: Develop specific prompts for each detection feature:
+  - Inconsistencies: "Analyze this article and identify any mismatches between claims and data."
+  - Statistical Flaws: "Check for unusual standard deviations, suspicious p-values, or inappropriate statistical methods."
+  - References: "Compare the article's claims about cited references with their actual content."
+- **Details**: Securely pass article text to the API and parse the response.
+
+#### 3.6 Reference Checking
+- **Mechanism**: 
+  - Extract reference metadata (DOIs, URLs) from the article text.
+  - Fetch content using web scraping or APIs (e.g., CrossRef for DOIs).
+  - Limit to open-access articles or abstracts for the MVP.
+- **Details**: Pass reference content to the LLM alongside the article for comparison.
+
+#### 3.7 Database (Optional for MVP)
+- **Purpose**: Store user data, uploaded articles, and analysis history.
+- **Recommendation**: Skip for MVP unless persistence is critical; revisit post-launch.
+
+---
+
+### 4. User Flow
+
+1. **Login**: User navigates to the site and logs in via Google OAuth.
+2. **Article Submission**: User uploads a PDF/DOCX file or pastes text and clicks "Analyze."
+3. **Processing**: The platform extracts text and sends it to the OpenAI API with detection prompts.
+4. **Results Display**: The analysis is shown with a summary and detailed breakdown of red flags.
+5. **Feedback (Optional)**: User can rate the analysis accuracy or report issues.
+
+---
+
+### 5. Design and UX
+
+#### 5.1 Color Palette
+- **Primary Colors**:
+  - Strong Periospot Blue (#15365a): Primary brand color, used for headers and important UI elements
+  - Mystic Blue (#003049): Secondary color for interactive elements and accents
+  - Black (#000000): Used for text and dark UI elements
+  
+- **Secondary Colors**:
+  - Crimson Blaze (#dc2626): Used for warning states and important actions
+  - Periospot Red (#ef4444): Used for error states and critical actions
+  - Vanilla Cream (#fef3c7): Used for backgrounds and subtle accents
+  - White (#ffffff): Used for backgrounds and text on dark surfaces
+
+- **Success State**:
+  - Green (#11562b): Used to indicate successful actions or active states
+
+#### 5.2 Analysis Output Format
+- **Summary**: Concise overview (e.g., "3 issues found").
+- **Detailed Sections**: 
+  - **Inconsistencies**: Quoted text with explanations.
+  - **Statistical Flaws**: Highlighted values with reasoning.
+  - **Reference Issues**: Side-by-side comparison of article claim vs. reference.
+- **Visuals**: Red for critical issues, yellow for warnings, green for no issues.
+
+#### 5.2 User Interface
+- **Inspiration**: Minimalist design like Elicit AI.
+- **Focus**: Easy navigation and readability for time-constrained dentists.
+
+---
+
+### 6. Ethical and Legal Considerations
+
+#### 6.1 Copyright
+- **Requirement**: Users must own the article or it must be open-access.
+- **Implementation**: Add a checkbox confirming user rights to upload.
+
+#### 6.2 Data Privacy
+- **Requirement**: Protect user data and uploaded articles.
+- **Implementation**: Encrypt session data; offer deletion after analysis.
+
+#### 6.3 Disclaimers
+- **Text**: "This analysis is AI-generated and should be used as a supplementary tool, not a definitive judgment. Verify findings with your expertise."
+- **Placement**: Display on login and results pages.
+
+---
+
+### 7. Future Enhancements
+- Detect author bias or undisclosed conflicts of interest.
+- Expand reference checking to non-open-access articles.
+- Support additional file formats (e.g., HTML, plain text).
+- Add user accounts with analysis history.
+
+---
+
+## Conclusion
+This PRD outlines the requirements for your Periospot AI MVP, focusing on Google login, article analysis, and the critical detection features you requested: inconsistencies between results and conclusions, statistical flaws (e.g., unusual standard deviations, suspicious p-values), and reference misinterpretations (with internet-based reference checking). Built with Next.js, this MVP will provide a solid foundation for helping dentists evaluate scientific literature.
+
+# Periospot AI MVP Development Guidelines
+
+## Project Overview
+Periospot AI is a cutting-edge platform for dental research analysis, focusing on making scientific literature more accessible and analyzable for dental professionals.
+
+## Development Process
+
+### Documentation Standards
+
+1. **Code Documentation**
+   - All code must be properly commented
+   - Complex functions require JSDoc documentation
+   - TypeScript types must be well-defined
+
+2. **Architecture Documentation**
+   - System design decisions
+   - Component relationships
+   - API specifications
+   - Database schema
+
+3. **Success Stories Documentation** 🌟
+   We maintain detailed records of our problem-solving successes in:
+   ```
+   /success_code_solving_issues/
+   ```
+   
+   Current success stories:
+   - [RLS and File Upload Implementation](mdc:success_code_solving_issues/file_upload_rls_fix.md)
+     - Solved complex security and storage issues
+     - Implemented robust metadata handling
+     - Created reusable code patterns
+
+   When we solve a significant challenge:
+   1. Create a new markdown file in the success stories directory
+   2. Document the solution with working code examples
+   3. Share with the team for future reference
+   4. Update this MVP document to track our growing collection of solutions
+
+### Testing Requirements
+- Unit tests for all business logic
+- Integration tests for API endpoints
+- End-to-end tests for critical flows
+
+### Deployment Process
+- Staging environment validation
+- Production deployment checklist
+- Rollback procedures
+
+### Quality Assurance
+- Code review requirements
+- Performance benchmarks
+- Security standards
+
+## Success Tracking
+
+We celebrate and document our victories! Each solved challenge becomes part of our knowledge base:
+
+1. **Technical Victories** 
+   - Bug fixes
+   - Performance improvements
+   - Security enhancements
+   → Documented in `/success_code_solving_issues/`
+
+2. **Feature Completions**
+   - New functionality
+   - User experience improvements
+   - System enhancements
+   → Tracked in project milestones
+
+3. **Learning Opportunities**
+   - Complex problem solutions
+   - Innovative approaches
+   - Team knowledge sharing
+   → Shared in team documentation
+
+## Latest Achievements
+
+### February 2024
+✅ Solved RLS and File Upload Implementation
+- Complex security implementation
+- Robust file handling
+- Metadata processing
+- [Full Solution Documentation](mdc:success_code_solving_issues/file_upload_rls_fix.md)
+
+## Next Steps
+
+1. Continue building our success stories library
+2. Document all major problem solutions
+3. Maintain working code examples
+4. Share knowledge across the team
+
+Remember: Our success stories are more than just documentation - they're our growing library of proven solutions and working code examples! 

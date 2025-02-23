@@ -1,9 +1,9 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
-.pnp.*
+.pnp.js
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
@@ -19,6 +19,7 @@
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -31,7 +32,12 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
 
 # vercel
 .vercel
@@ -39,3 +45,39 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Supabase
+/supabase/.temp/
+/supabase/.branches/
+/supabase/.temp
+periospot-backend/supabase/.temp/
+periospot-backend/.env
+
+# Temporary files
+*.log
+*.tmp
+.temp/
+
+# Test files
+/src/tests/fixtures/
+
+# Cache
+.cache/
+tsconfig.tsbuildinfo
+
+# Local Netlify folder
+.netlify
+
+# PWA files
+**/public/sw.js
+**/public/workbox-*.js
+**/public/worker-*.js
+**/public/sw.js.map
+**/public/workbox-*.js.map
+**/public/worker-*.js.map
