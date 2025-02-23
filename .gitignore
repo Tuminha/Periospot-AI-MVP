@@ -9,17 +9,28 @@ node_modules/
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+yarn.lock
+package-lock.json
 
 # testing
 /coverage
+.nyc_output
 
 # next.js
 /.next/
 /out/
+.next
+next-env.d.ts
 
 # production
 /build
 /dist
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
 
 # misc
 .DS_Store
@@ -81,3 +92,40 @@ tsconfig.tsbuildinfo
 **/public/sw.js.map
 **/public/workbox-*.js.map
 **/public/worker-*.js.map
+
+# Local development
+*.log
+.env*.local
+.vercel
+
+# Temporary files
+/tmp
+*.tmp
+*.temp
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Periospot specific
+periospot_mvp/
+title=src/
+
+# Dropbox
+.dropbox
+.dropbox.attr
+.dropbox.cache
+
+# Large binary files
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+
+# API keys and secrets
+.env*
+api-keys.json
+secrets.json
