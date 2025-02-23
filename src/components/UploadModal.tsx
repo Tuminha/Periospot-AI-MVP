@@ -4,10 +4,17 @@ import FileUpload from './FileUpload';
 interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAccept?: (metadata: any) => void;
 }
 
-export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
+export default function UploadModal({ isOpen, onClose, onAccept }: UploadModalProps) {
   if (!isOpen) return null;
+
+  const handleUploadSuccess = (metadata: any) => {
+    if (onAccept) {
+      onAccept(metadata);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -35,7 +42,7 @@ export default function UploadModal({ isOpen, onClose }: UploadModalProps) {
               <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
                 Upload Research Paper
               </h3>
-              <FileUpload />
+              <FileUpload onUploadSuccess={handleUploadSuccess} />
             </div>
           </div>
         </div>

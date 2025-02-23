@@ -5,7 +5,11 @@ import { extractMetadata } from '@/lib/metadata';
 import { ensureStorageBucket } from '@/lib/supabase/storage';
 import type { Author, ArticleMetadata } from '@/types/article';
 
-export default function FileUpload() {
+interface FileUploadProps {
+  onUploadSuccess?: (metadata: any) => void;
+}
+
+export default function FileUpload({ onUploadSuccess }: FileUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -306,7 +310,7 @@ export default function FileUpload() {
           </p>
         </div>
 
-        <div className="flex gap-2 flex-wrap mb-4">
+        <div className="flex gap-2 flex-wrap mb-6">
           {metadata.journal && (
             <span className="px-2 py-1 bg-purple-100 text-purple-800 text-sm rounded-full">
               {metadata.journal}
@@ -319,12 +323,20 @@ export default function FileUpload() {
           )}
         </div>
 
-        <button
-          onClick={resetUpload}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-periospot-blue-strong bg-white border-periospot-blue-strong hover:bg-gray-50"
-        >
-          Upload Another Paper
-        </button>
+        <div className="flex justify-end space-x-4">
+          <button
+            onClick={resetUpload}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          >
+            Upload Another Paper
+          </button>
+          <button
+            onClick={() => onUploadSuccess?.(metadata)}
+            className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-periospot-blue-strong hover:bg-periospot-blue-mystic focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-periospot-blue-mystic"
+          >
+            Accept Paper 🚀
+          </button>
+        </div>
       </div>
     );
   }

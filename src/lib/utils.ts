@@ -41,3 +41,8 @@ export function clearBrowserData() {
     return false;
   }
 }
+
+export function parseMarkdown(text: string): string {
+  // Handle bold text
+  return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+}

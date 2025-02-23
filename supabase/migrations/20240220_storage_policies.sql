@@ -59,25 +59,28 @@ WITH CHECK (
 );
 
 -- Drop the old function if it exists
-DROP FUNCTION IF EXISTS create_storage_policy(text, uuid);
+DROP FUNCTION IF EXISTS verify_storage_access(uuid);
 
 -- Create a simpler function to verify storage access
 CREATE OR REPLACE FUNCTION verify_storage_access(user_id uuid)
 RETURNS boolean AS $$
 BEGIN
-  -- Check if the user has access to the storage bucket
+  -- Check if the user exists and has access to the storage bucket
   RETURN EXISTS (
     SELECT 1 
-    FROM storage.buckets b
-    WHERE b.name = 'research-papers'
+    FROM auth.users u
+    WHERE u.id = user_id
     AND EXISTS (
       SELECT 1 
-      FROM auth.users u 
-      WHERE u.id = user_id
+      FROM storage.buckets b
+      WHERE b.name = 'research-papers'
     )
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Grant execute permission to authenticated users
+GRANT EXECUTE ON FUNCTION verify_storage_access(uuid) TO authenticated;
 
 -- Enable RLS on article_metadata table
 ALTER TABLE public.article_metadata ENABLE ROW LEVEL SECURITY;
